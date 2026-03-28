@@ -63,13 +63,18 @@ def mru(pages, length, capacity):
 
     #return the results as a dictionary
     return {
+        #self-explanatory
         'page_faults': page_faults,
         'page_hits': page_hits,
         'failure_rate': failure_rate,
         'success_rate': success_rate,
+        #this is the f0 1 2 3 etc thing in the column activity parts
         'frame_history': frame_history,
+        #this is the one at the bottom with the * and stuff
         'fault_history': fault_history,
+        #the sequence
         'pages': pages,
+        #the number of frames
         'capacity': capacity
     }
 
