@@ -1,9 +1,8 @@
-#algorithm for first in first out page replacement
+#algorithm for least recently used page replacement
 
-#this is purely for clearing the OS cuz its annoying
 import os
 
-def fifo(pages, length, capacity):
+def lru(pages, n, capacity):
     #basically this creates the empty frames for the memory like f0, f1, and etc where the pages will be stored
     frames = [''] * capacity
 
@@ -20,28 +19,42 @@ def fifo(pages, length, capacity):
     page_faults = 0
     page_hits = 0
 
-    #fifo pointer to track which frame to replace next
-    #this gets replaced every time a page fault happens, and it always loops back to the oldest page
-    replace_index = 0
+    #to store last used index of each page
+    #its a dictionary, basically the key is the page and the value is the last index it was used
+    #like 'A': 3, means that page A was last used at index 3
+    last_used = {}
 
-    #the actual fifo
-    for page in pages:
-        #if the page is not in the frames, then we replace the oldest with the new page and mark it as a page fault
-        if page not in frames:
-            #page fault occurs
-            frames[replace_index] = page
-            replace_index = (replace_index + 1) % capacity
-            page_faults += 1
-            fault_history.append('*')
-        else:
-            #but if its already there then we just mark it as a page hit and dont do anything to the frames
-            #page hit occurs
+    #the actual lru
+    for i in range(n):
+        page = pages[i]
+        if page in frames:
+            # page hit occurs
             page_hits += 1
             fault_history.append(' ')
+        else:
+            #page fault occurs
+            page_faults += 1
+            fault_history.append('*')
+            #no need to replace anything if theres an empty slot, just add new page
+            if '' in frames:
+                # find empty slot
+                idx = frames.index('')
+                frames[idx] = page
+            else:
+                #find LRU
+                #the last used.get thing is to get the last used index of the page
+                #if the page is not there, then return -1 meaning it hasnt been used yet
+                #then we find the index with the smallest last used index, which would be our LRU page
+                #hence the use of min
+                lru_idx = min(range(capacity), key=lambda x: last_used.get(frames[x], -1))
+                frames[lru_idx] = page
+
+        #this is to update the last used index of the page
+        last_used[page] = i
 
         #snapshot the current state of memory and save it
-        for i in range(capacity):
-            frame_history[i].append(frames[i])
+        for j in range(capacity):
+            frame_history[j].append(frames[j])
 
     #calculating for success and failure rates
     total_requests = len(pages)
@@ -74,7 +87,7 @@ def parse(token):
     except ValueError:
         return token
 
-#main
+# main
 if __name__ == "__main__":
     os.system('clear')
 
@@ -98,8 +111,8 @@ if __name__ == "__main__":
 
     #this just checks if its valid before running the function
     if length > 0 and capacity > 0:
-        result = fifo(pages, length, capacity)
-        
+        result = lru(pages, length, capacity)
+
         #formatting and printing the output table
         col_width = 4
 
@@ -107,7 +120,7 @@ if __name__ == "__main__":
         header = "Pages".ljust(6) + "| " + " | ".join(str(p).center(col_width) for p in result['pages']) + " |"
         print("\n" + "=" * len(header))
         print(header)
-        print("=" * len(header)) 
+        print("=" * len(header))
 
         #this prints the history of each frame
         for i in range(result['capacity']):
@@ -127,5 +140,5 @@ if __name__ == "__main__":
     else:
         print("Please enter valid frames and a sequence.")
 
-#This code is heavily guided by the one created by PranchalK 
-#https://www.geeksforgeeks.org/dsa/program-page-replacement-algorithms-set-2-fifo/
+#This code is heavily guided by the one created by ishankhandelwals
+#https://www.geeksforgeeks.org/dsa/program-for-least-recently-used-lru-page-replacement-algorithm/
