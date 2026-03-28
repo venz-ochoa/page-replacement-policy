@@ -2,7 +2,7 @@
 
 import os
 
-def lru(pages, n, capacity):
+def lru(pages, length, capacity):
     #basically this creates the empty frames for the memory like f0, f1, and etc where the pages will be stored
     frames = [''] * capacity
 
@@ -25,7 +25,7 @@ def lru(pages, n, capacity):
     last_used = {}
 
     #the actual lru
-    for i in range(n):
+    for i in range(length):
         page = pages[i]
         if page in frames:
             # page hit occurs
