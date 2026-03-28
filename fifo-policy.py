@@ -4,6 +4,7 @@
 import os
 
 def fifo(pages, length, capacity):
+    #basically this creates the empty frames for the memory like f0, f1, and etc where the pages will be stored
     frames = [''] * capacity
 
     #stores the history of each frame, for display purposes
@@ -16,10 +17,12 @@ def fifo(pages, length, capacity):
     page_hits = 0
 
     #fifo pointer to track which frame to replace next
+    #this gets replaced every time a page fault happens, and it always loops back to the oldest page
     replace_index = 0
 
     #the actual fifo
     for page in pages:
+        #if the page is not in the frames, then we replace the oldest with the new page and mark it as a page fault
         if page not in frames:
             #page fault occurs
             frames[replace_index] = page
@@ -27,6 +30,7 @@ def fifo(pages, length, capacity):
             page_faults += 1
             fault_history.append('*')
         else:
+            #but if its already there then we just mark it as a page hit and dont do anything to the frames
             #page hit occurs
             page_hits += 1
             fault_history.append(' ')
@@ -53,13 +57,16 @@ def fifo(pages, length, capacity):
     }
 
 #we get the unique values from the sequence
+#this is to convert the numerical sequence into tokens (integer)
 def parse(token):
     token = token.strip()
-    #this is the space between each token, we ignore it
+    #this is the space between each number, we ignore it
     if token == "":
         return None
     try:
+        #if it isnt empty and is a number, return it as a token, and try to convert it to an integer
         return int(token)
+        #if the user inputs string based sequence, it throws this error and we just return the string token instead of converting it to an integer
     except ValueError:
         return token
 
@@ -73,6 +80,7 @@ if __name__ == "__main__":
     pages_input = input("Enter the sequence of requested pages (space-separated): ")
 
     #convert the sequence into tokens and call the fifo function
+    #this is for string based sequence input, the parse thing is for converting it into int
     pages = []
     for token in pages_input.split():
         token = token.strip()
