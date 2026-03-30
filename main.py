@@ -18,6 +18,8 @@ class PageReplacementGUI:
         self.sequence = []
         self.placeholder_active = True
         self.setup_ui()
+        
+        self.root.resizable(False, False)
 
     def setup_ui(self):
         header = tk.Frame(self.root, bg="#0f172a", height=80)
@@ -241,7 +243,6 @@ class PageReplacementGUI:
         self.tree["columns"] = cols
         self.tree["show"] = "headings"
 
-        # Configure each column properly
         for idx, col in enumerate(cols):
             self.tree.heading(col, text=col)
             
